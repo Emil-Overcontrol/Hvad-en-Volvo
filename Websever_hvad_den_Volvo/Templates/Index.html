@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Hvad en Volvo</title>
+	<style>
+		:root {
+			--dark: #17202a;
+			--blue: #2d7dd2;
+			--light: #f4f7fb;
+			--text: #27313b;
+		}
+
+		* { box-sizing: border-box; }
+		body {
+			margin: 0;
+			font-family: Arial, sans-serif;
+			color: var(--text);
+			background: var(--light);
+		}
+		header {
+			background: var(--dark);
+			color: white;
+			padding: 1rem 8%;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+		.logo { font-size: 1.4rem; font-weight: bold; }
+		nav a {
+			color: white;
+			text-decoration: none;
+			margin-left: 1.5rem;
+		}
+		nav a:hover { color: #8ec5ff; }
+		.hero {
+			padding: 5rem 8%;
+			text-align: center;
+			background: linear-gradient(135deg, #dceeff, #ffffff);
+		}
+		h1 { margin: 0 0 1rem; font-size: 2.8rem; }
+		.hero p { font-size: 1.15rem; margin: 0 auto 2rem; max-width: 600px; }
+		.button {
+			display: inline-block;
+			padding: .8rem 1.5rem;
+			border-radius: 6px;
+			background: var(--blue);
+			color: white;
+			text-decoration: none;
+			font-weight: bold;
+		}
+		.button:hover { background: #1f61a5; }
+		.cards {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+			gap: 1.5rem;
+			max-width: 1100px;
+			margin: 3rem auto;
+			padding: 0 8%;
+		}
+		.card {
+			background: white;
+			padding: 1.5rem;
+			border-radius: 10px;
+			box-shadow: 0 3px 12px #00000012;
+		}
+		.card h2 { margin-top: 0; color: var(--blue); }
+		footer { text-align: center; padding: 1.5rem; background: var(--dark); color: white; }
+		@media (max-width: 600px) {
+			header { flex-direction: column; gap: 1rem; }
+			nav a { margin: 0 .5rem; }
+			h1 { font-size: 2.1rem; }
+		}
+	</style>
+</head>
+<body>
+	<header>
+		<div class="logo">Hvad en Volvo</div>
+		<nav>
+			<a href="#forside">Forside</a>
+			<a href="#om">Om os</a>
+			<a href="#kontakt">Kontakt</a>
+		</nav>
+	</header>
+
+	<main>
+		<section class="hero" id="forside">
+			<h1>Velkommen til Hvad en Volvo</h1>
+			<p>En enkel og moderne side om Volvo, biler og alt det, der gør køreturen bedre.</p>
+			<a class="button" href="#om">Læs mere</a>
+		</section>
+
+		<section class="cards" id="om">
+			<article class="card">
+				<h2>Kvalitet</h2>
+				<p>Volvo er kendt for solidt design, komfort og høj kvalitet.</p>
+			</article>
+			<article class="card">
+				<h2>Sikkerhed</h2>
+				<p>Sikkerhed kommer først med gennemtænkte løsninger til alle.</p>
+			</article>
+			<article class="card" id="kontakt">
+				<h2>Kontakt</h2>
+				<p>Har du spørgsmål? Skriv til os, så vender vi tilbage.</p>
+			</article>
+		</section>
+	</main>
+
+	<footer>&copy; 2024 Hvad en Volvo</footer>
+</body>
+</html>
