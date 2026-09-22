@@ -26,10 +26,12 @@
 			placeholder="For eksempel 240 eller XC90">
 
 		<section class="wiki-list" id="wiki-list">
-			{% for model in models %}
-			<article class="wiki-entry" data-model="{{ model|lower }}">
-				<h2>{{ model }}</h2>
+			{% for car in models %}
+			<article class="wiki-entry" data-model="{{ car.model|lower }}">
+				<h2>{{ car.model }}</h2>
 				<p>Volvo modelserie</p>
+				<p><strong>Farver:</strong> {{ car.colors|join(", ") }}</p>
+				<p><strong>Solgt:</strong> {{ car.years[0] }}-{{ car.years[-1] }}</p>
 			</article>
 			{% endfor %}
 		</section>

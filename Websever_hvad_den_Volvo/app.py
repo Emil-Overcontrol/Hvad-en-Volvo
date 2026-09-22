@@ -19,7 +19,7 @@ def index():
 
 @app.route("/wiki")
 def wiki():
-    return render_template("Wiki.html", models=VOLVO_MODELS)
+    return render_template("Wiki.html", models=get_car_models())
 
 
 @app.route("/api/data", methods=["GET"])
