@@ -4,6 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Hvad en Volvo</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
 	<style>
 		:root {
 			--dark: #17202a;
@@ -92,6 +93,11 @@
 		</section>
 
 		<section class="cards" id="om">
+			<article class="card catalogue" id="bilmodeller">
+				<h2>Volvo-modeller</h2>
+				<p>Se modeller, farver og de år, hvor de blev solgt.</p>
+				<div id="car-list" class="car-list" aria-live="polite">Indlæser bilmodeller...</div>
+			</article>
 			<article class="card">
 				<h2>Kvalitet</h2>
 				<p>Volvo er kendt for solidt design, komfort og høj kvalitet.</p>
@@ -108,5 +114,26 @@
 	</main>
 
 	<footer>&copy; 2024 Hvad en Volvo</footer>
+	<script>
+		async function loadCars() {
+			const list = document.getElementById('car-list');
+			try {
+				const response = await fetch('/api/cars');
+				if (!response.ok) throw new Error('Kunne ikke hente bilmodeller');
+				const { cars } = await response.json();
+				list.innerHTML = cars.map((car) => `
+					<div class="car">
+						<strong>${car.model}</strong>
+						<span>Farver: ${car.colors.join(', ')}</span>
+						<span>Solgt: ${car.years[0]}-${car.years[car.years.length - 1]}</span>
+					</div>
+				`).join('');
+			} catch (error) {
+				list.textContent = 'Bilmodellerne kunne ikke indlæses lige nu.';
+			}
+		}
+
+		loadCars();
+	</script>
 </body>
 </html>
