@@ -1,5 +1,5 @@
-from pathlib import Path
 import sqlite3
+from pathlib import Path
 
 if __package__:
     from .car_data import VOLVO_MODELS
@@ -7,81 +7,91 @@ else:
     from car_data import VOLVO_MODELS
 
 
-DATABASE_PATH = Path(__file__).resolve().parent / "volvo.sqlite3"
+BASE_DIR = Path(__file__).resolve().parent
+DEFAULT_DB_PATH = BASE_DIR / "volvo.sqlite3"
 
-SCHEMA = """
-CREATE TABLE IF NOT EXISTS car_models (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL UNIQUE
-);
 
-CREATE TABLE IF NOT EXISTS colors (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL UNIQUE
-);
-
-CREATE TABLE IF NOT EXISTS model_colors (
-    model_id INTEGER NOT NULL,
-    color_id INTEGER NOT NULL,
-    PRIMARY KEY (model_id, color_id),
-    FOREIGN KEY (model_id) REFERENCES car_models(id) ON DELETE CASCADE,
-    FOREIGN KEY (color_id) REFERENCES colors(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS model_years (
-    model_id INTEGER NOT NULL,
-    year INTEGER NOT NULL,
-    PRIMARY KEY (model_id, year),
-    FOREIGN KEY (model_id) REFERENCES car_models(id) ON DELETE CASCADE
-);
-"""
-
-def get_connection():
-    connection = sqlite3.connect(DATABASE_PATH)
+def _connect(db_path=None):
+    target = Path(db_path) if db_path else DEFAULT_DB_PATH
+    target.parent.mkdir(parents=True, exist_ok=True)
+    connection = sqlite3.connect(target)
     connection.row_factory = sqlite3.Row
     connection.execute("PRAGMA foreign_keys = ON")
-    return connection
+    return connection, target
 
 
-def initialize_database():
-    with get_connection() as connection:
-        connection.executescript(SCHEMA)
+def initialize_database(db_path=None):
+    connection, target = _connect(db_path)
+    try:
+        connection.executescript(
+            """
+            CREATE TABLE IF NOT EXISTS car_models (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL UNIQUE
+            );
+            CREATE TABLE IF NOT EXISTS colors (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL UNIQUE
+            );
+            CREATE TABLE IF NOT EXISTS model_colors (
+                model_id INTEGER NOT NULL,
+                color_id INTEGER NOT NULL,
+                PRIMARY KEY (model_id, color_id),
+                FOREIGN KEY (model_id) REFERENCES car_models(id) ON DELETE CASCADE,
+                FOREIGN KEY (color_id) REFERENCES colors(id) ON DELETE CASCADE
+            );
+            CREATE TABLE IF NOT EXISTS model_years (
+                model_id INTEGER NOT NULL,
+                year INTEGER NOT NULL,
+                PRIMARY KEY (model_id, year),
+                FOREIGN KEY (model_id) REFERENCES car_models(id) ON DELETE CASCADE
+            );
+            """
+        )
+        connection.executemany(
+            "INSERT OR IGNORE INTO car_models (name) VALUES (?)",
+            ((model_name,) for model_name in VOLVO_MODELS),
+        )
+        connection.commit()
+    finally:
+        connection.close()
+    return str(target)
 
-        for model_name in VOLVO_MODELS:
-            connection.execute(
-                "INSERT OR IGNORE INTO car_models (name) VALUES (?)",
-                (model_name,),
-            )
+
+def ensure_database_exists(db_path=None):
+    target = Path(db_path) if db_path else DEFAULT_DB_PATH
+    if not target.exists():
+        initialize_database(target)
+        return
+
+    connection = sqlite3.connect(target)
+    try:
+        table_exists = connection.execute(
+            "SELECT 1 FROM sqlite_master "
+            "WHERE type = 'table' AND name = 'car_models'"
+        ).fetchone()
+    finally:
+        connection.close()
+    if table_exists is None:
+        initialize_database(target)
 
 
-def get_car_models(model_name=None):
-    query = """
-        SELECT
-            car_models.id,
-            car_models.name,
-            GROUP_CONCAT(DISTINCT colors.name) AS colors
-        FROM car_models
-        LEFT JOIN model_colors ON model_colors.model_id = car_models.id
-        LEFT JOIN colors ON colors.id = model_colors.color_id
-        LEFT JOIN model_years ON model_years.model_id = car_models.id
-    """
-    parameters = []
-    if model_name:
-        query += " WHERE LOWER(car_models.name) = LOWER(?)"
-        parameters.append(model_name)
-    query += " GROUP BY car_models.id, car_models.name ORDER BY car_models.name"
+def get_car_models(model_name=None, db_path=None):
+    target = Path(db_path) if db_path else DEFAULT_DB_PATH
+    ensure_database_exists(target)
+    query = "SELECT id, name FROM car_models"
+    parameters = ()
+    if model_name is not None:
+        query += " WHERE LOWER(name) = LOWER(?)"
+        parameters = (model_name,)
+    query += " ORDER BY name"
 
-    with get_connection() as connection:
+    connection = sqlite3.connect(target)
+    try:
         rows = connection.execute(query, parameters).fetchall()
-        cars = []
-        for row in rows:
-            years = connection.execute(
-                "SELECT year FROM model_years WHERE model_id = ? ORDER BY year",
-                (row["id"],),
-            ).fetchall()
-            cars.append({
-                "model": row["name"],
-                "colors": sorted(row["colors"].split(",")) if row["colors"] else [],
-                "years": [year["year"] for year in years],
-            })
-        return cars
+    finally:
+        connection.close()
+    return [
+        {"model": name, "name": name, "colors": [], "years": []}
+        for _, name in rows
+    ]
