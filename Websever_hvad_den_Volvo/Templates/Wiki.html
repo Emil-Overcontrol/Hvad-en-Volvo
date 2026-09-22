@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Volvo-wiki | Hvad en Volvo</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+</head>
+<body>
+	<header>
+		<div class="logo">Hvad en Volvo</div>
+		<nav>
+			<a href="{{ url_for('index') }}">Forside</a>
+			<a class="wiki-button" href="{{ url_for('wiki') }}">Volvo-wiki</a>
+		</nav>
+	</header>
+
+	<main class="wiki-page">
+		<h1>Volvo-wiki</h1>
+		<p class="wiki-intro">
+			Her kan du finde de Volvo-modelserier, som bruges i bilspillet.
+			Brug søgefeltet til at finde en bestemt model.
+		</p>
+		<label for="wiki-search">Søg efter en Volvo-model</label>
+		<input class="wiki-search" id="wiki-search" type="search"
+			placeholder="For eksempel 240 eller XC90">
+
+		<section class="wiki-list" id="wiki-list">
+			{% for model in models %}
+			<article class="wiki-entry" data-model="{{ model|lower }}">
+				<h2>{{ model }}</h2>
+				<p>Volvo modelserie</p>
+			</article>
+			{% endfor %}
+		</section>
+	</main>
+
+	<footer>&copy; 2024 Hvad en Volvo</footer>
+	<script>
+		const search = document.getElementById('wiki-search');
+		const entries = document.querySelectorAll('.wiki-entry');
+
+		search.addEventListener('input', () => {
+			const query = search.value.trim().toLowerCase();
+			entries.forEach((entry) => {
+				entry.hidden = !entry.dataset.model.includes(query);
+			});
+		});
+	</script>
+</body>
+</html>

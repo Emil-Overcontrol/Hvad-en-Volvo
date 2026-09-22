@@ -12,11 +12,14 @@ class DatabaseTests(unittest.TestCase):
             db_path = os.path.join(tmpdir, "volvo.sqlite3")
             initialize_database(db_path)
 
-            with sqlite3.connect(db_path) as conn:
+            conn = sqlite3.connect(db_path)
+            try:
                 tables = conn.execute(
                     "SELECT name FROM sqlite_master WHERE type='table' AND name IN ('car_models','model_years','colors','model_colors')"
                 ).fetchall()
-                self.assertEqual(len(tables), 4)
+            finally:
+                conn.close()
+            self.assertEqual(len(tables), 4)
 
             models = get_car_models(db_path=db_path)
             self.assertIn("240", {model["name"] for model in models})

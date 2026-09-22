@@ -15,3 +15,79 @@
 .car span {
 	font-size: .9rem;
 }
+
+header {
+	position: relative;
+}
+
+.wiki-button {
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	margin: 0 !important;
+	padding: .65rem 1.25rem;
+	border-radius: 999px;
+	background: #2d7dd2;
+	color: white;
+	font-weight: bold;
+	box-shadow: 0 2px 8px #00000030;
+}
+
+.wiki-button:hover {
+	background: #1f61a5;
+	color: white;
+}
+
+.wiki-page {
+	max-width: 1100px;
+	margin: 0 auto;
+	padding: 3rem 8%;
+}
+
+.wiki-page h1 {
+	color: var(--dark);
+}
+
+.wiki-intro {
+	max-width: 700px;
+	line-height: 1.6;
+}
+
+.wiki-search {
+	width: 100%;
+	padding: .8rem 1rem;
+	margin: 1.5rem 0;
+	border: 1px solid #c5d0dc;
+	border-radius: 6px;
+	font: inherit;
+}
+
+.wiki-list {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: 1rem;
+}
+
+.wiki-entry {
+	background: white;
+	padding: 1.25rem;
+	border-radius: 8px;
+	border-top: 4px solid var(--blue);
+	box-shadow: 0 3px 12px #00000012;
+}
+
+.wiki-entry h2 {
+	margin: 0 0 .5rem;
+	color: var(--blue);
+}
+
+.wiki-entry p {
+	margin: 0;
+}
+
+@media (max-width: 600px) {
+	.wiki-button {
+		position: static;
+		transform: none;
+	}
+}
