@@ -121,13 +121,18 @@
 				const response = await fetch('/api/cars');
 				if (!response.ok) throw new Error('Kunne ikke hente bilmodeller');
 				const { cars } = await response.json();
-				list.innerHTML = cars.map((car) => `
-					<div class="car">
-						<strong>${car.model}</strong>
-						<span>Farver: ${car.colors.join(', ')}</span>
-						<span>Solgt: ${car.years[0]}-${car.years[car.years.length - 1]}</span>
-					</div>
-				`).join('');
+				list.innerHTML = cars.map((car) => {
+					const modelName = car.name || 'Ukendt model';
+					const colors = Array.isArray(car.colors) && car.colors.length ? car.colors.join(', ') : 'Ingen farver registreret';
+					const years = Array.isArray(car.years) && car.years.length ? `${car.years[0]}-${car.years[car.years.length - 1]}` : 'Ukendt årgang';
+					return `
+						<div class="car">
+							<strong>${modelName}</strong>
+							<span>Farver: ${colors}</span>
+							<span>Solgt: ${years}</span>
+						</div>
+					`;
+				}).join('');
 			} catch (error) {
 				list.textContent = 'Bilmodellerne kunne ikke indlæses lige nu.';
 			}
