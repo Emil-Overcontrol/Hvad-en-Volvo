@@ -47,34 +47,10 @@ def initialize_database():
     with get_connection() as connection:
         connection.executescript(SCHEMA)
 
-        for model_name, model_data in VOLVO_MODELS.items():
+        for model_name in VOLVO_MODELS:
             connection.execute(
                 "INSERT OR IGNORE INTO car_models (name) VALUES (?)",
                 (model_name,),
-            )
-            model_id = connection.execute(
-                "SELECT id FROM car_models WHERE name = ?",
-                (model_name,),
-            ).fetchone()["id"]
-
-            for color_name in model_data["colors"]:
-                connection.execute(
-                    "INSERT OR IGNORE INTO colors (name) VALUES (?)",
-                    (color_name,),
-                )
-                color_id = connection.execute(
-                    "SELECT id FROM colors WHERE name = ?",
-                    (color_name,),
-                ).fetchone()["id"]
-                connection.execute(
-                    "INSERT OR IGNORE INTO model_colors (model_id, color_id) "
-                    "VALUES (?, ?)",
-                    (model_id, color_id),
-                )
-
-            connection.executemany(
-                "INSERT OR IGNORE INTO model_years (model_id, year) VALUES (?, ?)",
-                ((model_id, year) for year in model_data["years"]),
             )
 
 

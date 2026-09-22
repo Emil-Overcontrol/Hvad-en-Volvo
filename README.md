@@ -16,6 +16,10 @@ Data kan hentes fra API'et:
 - `GET /api/cars` henter alle modeller
 - `GET /api/cars/240` henter én model
 
-Volvo-modellerne ligger separat i `Websever_hvad_den_Volvo/car_data.py`,
-på samme niveau som `app.py`. Seed-dataen indeholder Volvos vigtigste modelserier fra PV, Amazon og P1800
+Wiki-siden findes på `/wiki` og viser alle modeller fra `car_data.py` med et
+søgefelt.
+
+Volvo-modellerne ligger separat som en simpel liste i
+`Websever_hvad_den_Volvo/car_data.py`, på samme niveau som `app.py`.
+Listen indeholder Volvos vigtigste modelserier fra PV, Amazon og P1800
 til 140/164, 240/700/900, 850, S/V/C/XC-serierne og de nyere EX/EC-elbiler.

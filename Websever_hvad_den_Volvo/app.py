@@ -1,8 +1,10 @@
 from flask import Flask, jsonify, render_template
 
 if __package__:
+    from .car_data import VOLVO_MODELS
     from .database import get_car_models, initialize_database
 else:
+    from car_data import VOLVO_MODELS
     from database import get_car_models, initialize_database
 
 
@@ -12,6 +14,12 @@ initialize_database()
 @app.route('/')
 def index():
     return render_template('Index.html')
+
+
+@app.route('/wiki')
+def wiki():
+    return render_template('Wiki.html', models=VOLVO_MODELS)
+
 
 @app.route('/api/data', methods=['GET'])
 def get_data():
