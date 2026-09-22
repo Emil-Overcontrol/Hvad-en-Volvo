@@ -8,44 +8,64 @@
 </head>
 <body>
 	<header>
-		<div class="logo">Hvad en Volvo</div>
-		<nav>
-			<a href="{{ url_for('index') }}">Forside</a>
-			<a class="wiki-button" href="{{ url_for('wiki') }}">Volvo-wiki</a>
-		</nav>
+		<div class="header-inner">
+			<div class="logo"><span class="logo-mark"></span>Hvad en Volvo</div>
+			<nav class="site-nav" aria-label="Sekundær navigation">
+				<a href="{{ url_for('index') }}">Forside</a>
+				<a class="primary-link" href="{{ url_for('wiki') }}">Volvo-wiki</a>
+			</nav>
+		</div>
 	</header>
 
 	<main class="wiki-page">
-		<h1>Volvo-wiki</h1>
-		<p class="wiki-intro">
-			Her kan du finde de Volvo-modelserier, som bruges i bilspillet.
-			Brug søgefeltet til at finde en bestemt model.
-		</p>
-		<label for="wiki-search">Søg efter en Volvo-model</label>
-		<input class="wiki-search" id="wiki-search" type="search"
-			placeholder="For eksempel 240 eller XC90">
+		<div class="wiki-wrapper">
+			<div class="wiki-top">
+				<h1>Volvo-wiki</h1>
+			</div>
+			<p class="wiki-intro">
+				Her kan du finde de Volvo-modelserier, som bruges i bilspillet.
+				Brug søgefeltet til at finde en bestemt model.
+			</p>
+			<div class="search-wrap">
+				<label for="wiki-search" class="sr-only">Søg efter en Volvo-model</label>
+				<input class="wiki-search" id="wiki-search" type="search"
+					placeholder="For eksempel 240 eller XC90">
+			</div>
 
-		<section class="wiki-list" id="wiki-list">
-			{% for model in models %}
-			<article class="wiki-entry" data-model="{{ model|lower }}">
-				<h2>{{ model }}</h2>
-				<p>Volvo modelserie</p>
-			</article>
-			{% endfor %}
-		</section>
+			<div class="empty-state" id="empty-state">Ingen modeller matcher din søgning.</div>
+			<section class="wiki-list" id="wiki-list">
+				{% for model in models %}
+				<article class="wiki-entry" data-model="{{ model|lower }}">
+					<h2>{{ model }}</h2>
+					<p>Volvo modelserie</p>
+				</article>
+				{% endfor %}
+			</section>
+		</div>
 	</main>
 
-	<footer>&copy; 2024 Hvad en Volvo</footer>
+	<footer>
+		<div class="footer-inner">&copy; 2024 Hvad en Volvo</div>
+	</footer>
 	<script>
 		const search = document.getElementById('wiki-search');
 		const entries = document.querySelectorAll('.wiki-entry');
+		const emptyState = document.getElementById('empty-state');
 
-		search.addEventListener('input', () => {
+		function filterModels() {
 			const query = search.value.trim().toLowerCase();
+			let visibleCount = 0;
+
 			entries.forEach((entry) => {
-				entry.hidden = !entry.dataset.model.includes(query);
+				const matches = entry.dataset.model.includes(query);
+				entry.hidden = !matches;
+				if (matches) visibleCount += 1;
 			});
-		});
+
+			emptyState.classList.toggle('visible', visibleCount === 0 && query.length > 0);
+		}
+
+		search.addEventListener('input', filterModels);
 	</script>
 </body>
 </html>
