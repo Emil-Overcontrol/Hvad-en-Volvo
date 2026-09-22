@@ -1,0 +1,17 @@
+.car-list {
+	display: grid;
+	gap: .75rem;
+	margin-top: 1rem;
+}
+
+.car {
+	display: grid;
+	gap: .2rem;
+	padding: .75rem;
+	border-left: 4px solid var(--blue);
+	background: var(--light);
+}
+
+.car span {
+	font-size: .9rem;
+}
