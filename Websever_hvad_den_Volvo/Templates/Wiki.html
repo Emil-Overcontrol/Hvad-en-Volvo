@@ -32,16 +32,14 @@
 					placeholder="For eksempel 240 eller XC90">
 			</div>
 
-			<div class="empty-state" id="empty-state">Ingen modeller matcher din søgning.</div>
-			<section class="wiki-list" id="wiki-list">
-				{% for model in models %}
-				<article class="wiki-entry" data-model="{{ model|lower }}">
-					<h2>{{ model }}</h2>
-					<p>Volvo modelserie</p>
-				</article>
-				{% endfor %}
-			</section>
-		</div>
+		<section class="wiki-list" id="wiki-list">
+			{% for model in models %}
+			<article class="wiki-entry" data-model="{{ model|lower }}">
+				<h2>{{ model }}</h2>
+				<p>Volvo modelserie</p>
+			</article>
+			{% endfor %}
+		</section>
 	</main>
 
 	<footer>

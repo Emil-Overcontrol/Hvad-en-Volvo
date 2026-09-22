@@ -2,9 +2,9 @@ import sqlite3
 from pathlib import Path
 
 if __package__:
-    from .car_data import VOLVO_MODELS
+    from .car_data import VOLVO_DETAILS, VOLVO_MODELS
 else:
-    from car_data import VOLVO_MODELS
+    from car_data import VOLVO_DETAILS, VOLVO_MODELS
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -52,6 +52,24 @@ def initialize_database(db_path=None):
             "INSERT OR IGNORE INTO car_models (name) VALUES (?)",
             ((model_name,) for model_name in VOLVO_MODELS),
         )
+        for model_name, (years, colors) in VOLVO_DETAILS.items():
+            model_id = connection.execute(
+                "SELECT id FROM car_models WHERE name = ?", (model_name,)
+            ).fetchone()["id"]
+            for year in years:
+                connection.execute(
+                    "INSERT OR IGNORE INTO model_years (model_id, year) VALUES (?, ?)",
+                    (model_id, year),
+                )
+            for color in colors:
+                connection.execute("INSERT OR IGNORE INTO colors (name) VALUES (?)", (color,))
+                color_id = connection.execute(
+                    "SELECT id FROM colors WHERE name = ?", (color,)
+                ).fetchone()["id"]
+                connection.execute(
+                    "INSERT OR IGNORE INTO model_colors (model_id, color_id) VALUES (?, ?)",
+                    (model_id, color_id),
+                )
         connection.commit()
     finally:
         connection.close()
@@ -91,7 +109,26 @@ def get_car_models(model_name=None, db_path=None):
         rows = connection.execute(query, parameters).fetchall()
     finally:
         connection.close()
-    return [
-        {"model": name, "name": name, "colors": [], "years": []}
-        for _, name in rows
-    ]
+    cars = []
+    connection = sqlite3.connect(target)
+    try:
+        for _, name in rows:
+            colors = connection.execute(
+                "SELECT c.name FROM colors c JOIN model_colors mc ON mc.color_id = c.id "
+                "JOIN car_models cm ON cm.id = mc.model_id WHERE cm.name = ? ORDER BY c.name",
+                (name,),
+            ).fetchall()
+            years = connection.execute(
+                "SELECT year FROM model_years WHERE model_id = "
+                "(SELECT id FROM car_models WHERE name = ?) ORDER BY year",
+                (name,),
+            ).fetchall()
+            cars.append({
+                "model": name,
+                "name": name,
+                "colors": [color[0] for color in colors],
+                "years": [year[0] for year in years],
+            })
+    finally:
+        connection.close()
+    return cars
