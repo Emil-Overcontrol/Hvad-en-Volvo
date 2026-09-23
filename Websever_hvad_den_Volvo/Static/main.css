@@ -1,16 +1,18 @@
 :root {
-	--bg: #f3f7fb;
+	--bg: #eef3f6;
 	--panel: #ffffff;
-	--panel-soft: #edf4ff;
-	--navy: #122330;
-	--navy-2: #1a2d40;
-	--primary: #2d7dd2;
-	--primary-strong: #1f61a5;
-	--primary-soft: #e7f1ff;
-	--text: #1d2b39;
-	--muted: #5d6b7a;
-	--line: #d7e1ed;
-	--shadow: rgba(17, 34, 51, 0.12);
+	--panel-soft: #eef3f8;
+	--navy: #171d24;
+	--navy-2: #0d141b;
+	--primary: #1f5e9f;
+	--primary-strong: #173f73;
+	--primary-soft: #e3edf9;
+	--silver: #b5bec8;
+	--silver-soft: #edf1f5;
+	--text: #1d242c;
+	--muted: #5e6772;
+	--line: #d1dbe5;
+	--shadow: rgba(17, 24, 32, 0.12);
 	--radius: 18px;
 }
 
@@ -27,8 +29,8 @@ body {
 	font-family: "Segoe UI", Arial, sans-serif;
 	color: var(--text);
 	background:
-		radial-gradient(circle at top left, rgba(45, 125, 210, 0.09), transparent 22%),
-		var(--bg);
+		radial-gradient(circle at top left, rgba(31, 94, 159, 0.12), transparent 26%),
+		linear-gradient(180deg, #f7f9fb 0%, var(--bg) 100%);
 	line-height: 1.6;
 }
 
@@ -110,7 +112,7 @@ header {
 .site-nav .primary-link {
 	background: linear-gradient(135deg, var(--primary), var(--primary-strong));
 	color: #fff;
-	box-shadow: 0 10px 18px rgba(45, 125, 210, 0.26);
+	box-shadow: 0 10px 18px rgba(23, 63, 115, 0.22);
 }
 
 .site-nav .primary-link:hover,
@@ -128,11 +130,11 @@ main {
 }
 
 .hero-panel {
-	background: linear-gradient(135deg, rgba(255, 255, 255, 0.86), rgba(231, 241, 255, 0.88));
-	border: 1px solid rgba(45, 125, 210, 0.08);
+	background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(227, 237, 249, 0.9));
+	border: 1px solid rgba(23, 63, 115, 0.08);
 	border-radius: calc(var(--radius) + 8px);
 	padding: clamp(2rem, 4vw, 4rem);
-	box-shadow: 0 25px 50px rgba(17, 34, 51, 0.08);
+	box-shadow: 0 25px 50px rgba(17, 24, 32, 0.08);
 }
 
 .hero-badge {
@@ -140,7 +142,7 @@ main {
 	align-items: center;
 	padding: 0.45rem 0.8rem;
 	border-radius: 999px;
-	background: rgba(45, 125, 210, 0.08);
+	background: rgba(31, 94, 159, 0.08);
 	color: var(--primary-strong);
 	font-size: 0.8rem;
 	font-weight: 700;
@@ -188,11 +190,11 @@ main {
 .button.primary {
 	background: linear-gradient(135deg, var(--primary), var(--primary-strong));
 	color: #fff;
-	box-shadow: 0 12px 24px rgba(45, 125, 210, 0.2);
+	box-shadow: 0 12px 24px rgba(23, 63, 115, 0.2);
 }
 
 .button.secondary {
-	background: rgba(18, 35, 48, 0.04);
+	background: rgba(17, 24, 32, 0.04);
 	color: var(--navy);
 	border: 1px solid var(--line);
 }
@@ -237,7 +239,7 @@ main {
 	height: 2.6rem;
 	margin-bottom: 1rem;
 	border-radius: 12px;
-	background: var(--primary-soft);
+	background: linear-gradient(135deg, var(--primary-soft), var(--silver-soft));
 	color: var(--primary-strong);
 	font-size: 1.25rem;
 	font-weight: 700;
@@ -343,7 +345,7 @@ main {
 }
 
 .wiki-entry {
-	background: linear-gradient(180deg, #ffffff, #f7faff);
+	background: linear-gradient(180deg, #ffffff, #f4f7fb);
 	padding: 1.25rem 1rem 1rem;
 	border-radius: 14px;
 	border: 1px solid var(--line);
