@@ -123,7 +123,10 @@ header {
 
 main {
 	padding-bottom: 4rem;
-}
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}	
 
 .hero {
 	padding: 5.5rem 0 4rem;
@@ -422,4 +425,7 @@ footer {
 	.button {
 		width: 100%;
 	}
+}
+.game-description {
+	text-align: center;
 }
