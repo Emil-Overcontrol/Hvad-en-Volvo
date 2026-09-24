@@ -21,6 +21,9 @@ def index():
 def wiki():
     return render_template("Wiki.html", models=get_car_models())
 
+@app.route("/game")
+def game():
+    return render_template("Game.html", models=get_car_models())
 
 @app.route("/api/data", methods=["GET"])
 def get_data():

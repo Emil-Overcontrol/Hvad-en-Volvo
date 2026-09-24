@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Ready to Play | Hvad en Volvo</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+</head>
+<body>
+	<header>
+		<div class="header-inner">
+			<div class="logo"><span class="logo-mark"></span>Hvad en Volvo</div>
+			<nav class="site-nav" aria-label="Hovednavigation">
+				<a href="{{ url_for('index') }}">Hovedside</a>
+				<a href="{{ url_for('wiki') }}">Volvo-wiki</a>
+				<a class="game-link" href="{{ url_for('game') }}">Ready to Play</a>
+			</nav>
+		</div>
+	</header>
+
+	<main>
+		<section class="hero" id="forside">
+			<div class="main-content hero-panel">
+				<h1>Ready for Play</h1>
+				<p>En enkel og moderne side om Volvo-spil.</p>
+			</div>
+		</section>
+
+	</main>
+
+	<footer>
+		<div class="footer-inner">&copy; 2024 Ready to Play</div>
+	</footer>
+
+</body>
+</html>
