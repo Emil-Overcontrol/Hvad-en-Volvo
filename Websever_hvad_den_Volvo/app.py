@@ -16,7 +16,6 @@ initialize_database()
 def index():
     return render_template("Index.html")
 
-
 @app.route("/wiki")
 def wiki():
     return render_template("Wiki.html", models=get_car_models())
@@ -24,6 +23,10 @@ def wiki():
 @app.route("/game")
 def game():
     return render_template("Game.html", models=get_car_models())
+
+@app.route("/game/aktiv", methods=["GET"])
+def get_game():
+    return render_template("indgame.html", models=get_car_models())
 
 @app.route("/api/data", methods=["GET"])
 def get_data():
@@ -33,7 +36,6 @@ def get_data():
 @app.route("/api/cars", methods=["GET"])
 def get_cars():
     return jsonify({"cars": get_car_models()})
-
 
 @app.route("/api/cars/<model_name>", methods=["GET"])
 def get_car(model_name):
