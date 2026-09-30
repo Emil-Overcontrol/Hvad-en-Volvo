@@ -23,7 +23,20 @@
 		<section class="hero" id="forside">
 			<div class="main-content hero-panel"style="text-align: center;">
 			    <h1>Ready for Game</h1>
-			    <p class="game-description">Her skal du kunne kende dine Volvo biler Volvo-spil.</p>   
+				<p class="game-description">Her skal du kunne kende dine Volvo biler Volvo-spil.</p>
+				<button id="get-going" class="button primary">Get going</button>
+
+				<div id="game-area" style="display:none; margin-top:1.25rem; text-align:left; max-width:720px; margin-left:auto; margin-right:auto;">
+					<div id="question" style="font-weight:600; margin-bottom:0.75rem;"></div>
+					<div id="answer-row" style="display:flex; gap:0.5rem; margin-bottom:0.5rem;">
+						<input id="answer-input" type="text" placeholder="Skriv modelnavn her" style="flex:1; padding:0.5rem;" />
+						<button id="submit-answer" class="button">Send</button>
+					</div>
+					<div id="feedback" style="min-height:1.2rem; margin-bottom:0.5rem; color:#222;"></div>
+					<div id="game-info" style="display:flex;justify-content:flex-end;align-items:center;gap:0.5rem;">
+						<button id="next-btn" class="button" style="display:none;">Næste</button>
+					</div>
+				</div>
 			</div>
 		</section>
 
@@ -32,6 +45,144 @@
 	<footer>
 		<div class="footer-inner">&copy; 2024 Ready to Play</div>
 	</footer>
+
+	<script>
+		// Typed-answer game flow
+		document.addEventListener('DOMContentLoaded', () => {
+			const startBtn = document.getElementById('get-going');
+			if (startBtn) startBtn.addEventListener('click', startGame);
+		});
+
+		async function startGame() {
+			const startBtn = document.getElementById('get-going');
+			const area = document.getElementById('game-area');
+			const qEl = document.getElementById('question');
+			const inputEl = document.getElementById('answer-input');
+			const submitBtn = document.getElementById('submit-answer');
+			const feedbackEl = document.getElementById('feedback');
+			const nextBtn = document.getElementById('next-btn');
+
+			if (startBtn) startBtn.style.display = 'none';
+			area.style.display = 'block';
+
+			let data = { cars: [] };
+			try {
+				const res = await fetch('/api/cars');
+				if (res.ok) data = await res.json();
+			} catch (err) {
+				console.error('Could not load cars', err);
+			}
+
+			const pool = Array.isArray(data.cars) ? data.cars.slice() : [];
+			if (!pool.length) {
+				qEl.textContent = 'Ingen bildata tilgængelig til spillet.';
+				return;
+			}
+
+			shuffleArray(pool);
+			const game = { pool, index: 0 };
+
+			function renderQuestion() {
+				const item = game.pool[game.index];
+				// Prepare incremental hints: colors, years, first letter, length
+				const colors = Array.isArray(item.colors) && item.colors.length ? `Farver: ${item.colors.join(', ')}` : null;
+				const years = Array.isArray(item.years) && item.years.length ? `År: ${item.years[0]}-${item.years[item.years.length-1]}` : null;
+				const name = item.name || '';
+				const firstLetter = name ? `Første bogstav: ${name.trim().charAt(0)}` : null;
+				const lengthHint = name ? `Bogstavantal: ${name.replace(/\s+/g,'').length}` : null;
+				const hints = [];
+				if (colors) hints.push(colors);
+				if (years) hints.push(years);
+				if (firstLetter) hints.push(firstLetter);
+				if (lengthHint) hints.push(lengthHint);
+
+				// store hints and start with the first one
+				game.hints = hints;
+				game.hintIndex = 0;
+				qEl.textContent = hints.length ? hints[0] : 'Gæt modellens navn.';
+				feedbackEl.textContent = '';
+				inputEl.value = '';
+				inputEl.disabled = false;
+				submitBtn.disabled = false;
+				nextBtn.style.display = 'none';
+				inputEl.focus();
+				// no score display
+			}
+
+			submitBtn.addEventListener('click', onSubmit);
+			inputEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') onSubmit(); });
+
+			function normalize(s) {
+				if (!s) return '';
+				return s.trim().toLowerCase().replace(/[^a-z0-9æøå\s]/g, '');
+			}
+
+			function onSubmit() {
+				const answer = normalize(inputEl.value);
+				const correct = normalize(game.pool[game.index].name || '');
+				if (!answer) {
+					feedbackEl.style.color = 'crimson';
+					feedbackEl.textContent = 'Skriv et svar, og tryk Send.';
+					inputEl.focus();
+					return;
+				}
+
+				if (answer === correct) {
+					feedbackEl.style.color = 'green';
+					feedbackEl.textContent = 'Rigtigt!';
+					// lock input and allow proceeding
+					inputEl.disabled = true;
+					submitBtn.disabled = true;
+					nextBtn.style.display = 'inline-block';
+					return;
+				}
+
+				// Wrong answer: reveal next hint if available
+				game.hintIndex = (game.hintIndex || 0) + 1;
+				if (game.hints && game.hintIndex < game.hints.length) {
+					// show combined hints up to current index
+					qEl.textContent = game.hints.slice(0, game.hintIndex + 1).join(' — ');
+					feedbackEl.style.color = 'crimson';
+					feedbackEl.textContent = 'Forkert — nyt hint vist. Prøv igen.';
+					inputEl.value = '';
+					inputEl.focus();
+					return;
+				}
+
+				// No more hints: reveal correct answer and lock
+				feedbackEl.style.color = 'crimson';
+				feedbackEl.textContent = `Forkert — rigtigt svar: ${game.pool[game.index].name || 'Ukendt'}`;
+				inputEl.disabled = true;
+				submitBtn.disabled = true;
+				nextBtn.style.display = 'inline-block';
+			}
+
+			nextBtn.addEventListener('click', () => {
+				game.index += 1;
+				if (game.index >= game.pool.length) {
+					endGame();
+				} else {
+					renderQuestion();
+				}
+			});
+
+			renderQuestion();
+
+			function endGame() {
+				qEl.textContent = 'Spillet er slut!';
+				feedbackEl.textContent = `Tak for at spille — du svarede på ${game.pool.length} spørgsmål.`;
+				document.getElementById('answer-row').style.display = 'none';
+				nextBtn.style.display = 'none';
+			}
+
+			function shuffleArray(arr) {
+				for (let i = arr.length - 1; i > 0; i--) {
+					const j = Math.floor(Math.random() * (i + 1));
+					[arr[i], arr[j]] = [arr[j], arr[i]];
+				}
+			}
+		}
+	</script>
 
 </body>
 </html>
